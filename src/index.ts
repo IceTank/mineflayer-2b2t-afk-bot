@@ -46,6 +46,7 @@ proxy = new InspectorProxy({
 })
 
 proxy.on('botReady', (conn) => {
+  let spawnedTime = new Date()
   loadPlugins(conn)
   const bot = conn.bot
   bot.proxy.emitter.on('proxyBotLostControl', () => {
@@ -57,10 +58,22 @@ proxy.on('botReady', (conn) => {
     bot.afkController.start()
   }, 3000)
 
+  setInterval(() => {
+    bot.swingArm('right')
+  }, 10000)
+
   bot.on('error', (err) => console.error('Bot error', err))
   bot.on('kicked', console.error)
-  bot.on('spawn', () => console.info('Bot spawned'))
-  bot.on('end', () => proxy?.stopBot())
+  bot.on('spawn', () => {
+    spawnedTime = new Date()
+    console.info('Bot spawned')
+  })
+  bot.on('end', () => {
+    let now = new Date()
+    const hoursConnected = (now.getTime() - spawnedTime.getTime()) / (1000 * 60 * 60)
+    console.info(`Bot was connected for ${hoursConnected.toFixed(2)} hours`, now)
+    proxy?.stopBot()
+  })
 })
 
 proxy.on('clientConnect', async () => {
