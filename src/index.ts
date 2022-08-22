@@ -71,8 +71,13 @@ proxy.on('botReady', (conn) => {
   bot.on('end', () => {
     let now = new Date()
     const hoursConnected = (now.getTime() - spawnedTime.getTime()) / (1000 * 60 * 60)
-    console.info(`Bot was connected for ${hoursConnected.toFixed(2)} hours`, now)
+    console.info(`Bot was connected for ${hoursConnected.toFixed(2)} hours. Reconnecting in 15 seconds.`, now)
     proxy?.stopBot()
+
+    setTimeout(() => {
+      console.info('Reconnecting...')
+      proxy?.startBot()
+    }, 15000)
   })
 })
 
